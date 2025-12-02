@@ -1,36 +1,27 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("../input.csv").unwrap();
+    let input = fs::read_to_string("../input.txt").unwrap();
 
-    // let last: Vec<_> = input.split(',').rev().take(5).collect();
-    // println!("{last:?}");
+    fn is_valid(num: u64) -> bool {
+        let num = num.to_string();
+        let len = num.len();
 
-    let mut total = 0;
+        if len % 2 == 1 { return true; }
 
-    fn is_not_valid(num: u64) -> bool {
-        // let num = num.to_string();
-
-        // for char in num.chars() {}
-
-        true
+        let (l, r) = num.split_at(len / 2);
+        l != r
     }
 
-    input
+    let result: u64 = input
         .split(',')
         .map(|s| {
             let (start, end) = s.trim().split_once('-').unwrap();
-            let start = start.parse::<u64>().unwrap();
-            let end = end.parse::<u64>().unwrap();
-            (start, end)
+            (start.parse::<u64>().unwrap(), end.parse::<u64>().unwrap())
         })
-        .for_each(|(s, e)| {
-            for i in s..=e {
-                if is_not_valid(i) {
-                    total += i;
-                }
-            }
-        });
+        .flat_map(|(s, e)| s..=e)
+        .filter(|&n| !is_valid(n))
+        .sum();
 
-    println!("total: {total}");
+    println!("total: {result}");
 }
